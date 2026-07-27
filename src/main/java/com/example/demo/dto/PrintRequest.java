@@ -1,20 +1,24 @@
 package com.example.demo.dto;
 
-import lombok.Data;
+import com.example.demo.validation.OddNumber;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
-import javax.validation.constraints.*;
+/**
+ * Request body: one or more letters to render and the (odd, positive) grid size.
+ *
+ * <p>Which letters are actually accepted is validated against the registered
+ * renderers in the service layer, so it stays in step with the available letters.
+ */
+public record PrintRequest(
 
-@Data
-public class PrintRequest {
+        @NotBlank(message = "letters must not be blank")
+        String letters,
 
-    @NotNull
-    @NotBlank
-    @NotEmpty
-    @Pattern(regexp = "^[XYZ]+$", message = "Only X, Y, and Z characters are allowed")
-    private String letters;
-
-    @NotNull
-    @Positive
-    @Size(min = 3, max = 7)
-    private int dimension;
+        @NotNull(message = "size is required")
+        @Positive(message = "size must be a positive integer")
+        @OddNumber(message = "size must be an odd integer")
+        Integer size
+) {
 }

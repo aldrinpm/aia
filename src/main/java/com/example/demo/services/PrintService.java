@@ -1,42 +1,36 @@
 package com.example.demo.services;
 
-import com.example.demo.dao.Letter;
+import com.example.demo.domain.LetterRendererRegistry;
+import com.example.demo.dto.LetterGridResponse;
 import com.example.demo.dto.PrintRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class PrintService {
 
-    public List<Map<String, List<String>>> printGrid(PrintRequest request) {
-        String letters = ((String) request.getLetters()).toUpperCase();
-        int dim = request.getDimension();
+    private final LetterRendererRegistry registry;
 
-        List<Map<String, List<String>>> result = new ArrayList<>();
+    public PrintService(LetterRendererRegistry registry) {
+        this.registry = registry;
+    }
 
-        if (dim % 2 == 0) {
-            Map<String, List<String>> errorMessage = new HashMap<>();
-            errorMessage.put("Error", new ArrayList<>(List.of("Message", "The dimension must be an odd integer.")));
-            result.add(errorMessage);
+    /**
+     * Renders every letter in the request, preserving input order.
+     *
+     * @throws com.example.demo.exception.UnsupportedLetterException
+     *         if the request contains a letter with no renderer
+     */
+    public List<LetterGridResponse> render(PrintRequest request) {
+        String letters = request.letters().toUpperCase();
+        int size = request.size();
 
-            return result;
-        }
-
+        List<LetterGridResponse> result = new ArrayList<>(letters.length());
         for (char letter : letters.toCharArray()) {
-            Letter letterObj = new Letter(letter);
-            List<String> letterGrid = letterObj.printGrid(dim);
-
-            Map<String, List<String>> letterMap = new HashMap<>();
-            letterMap.put("letterGrid", letterGrid);
-
-            result.add(letterMap);
+            result.add(new LetterGridResponse(registry.get(letter).render(size)));
         }
-
-
         return result;
     }
 }
