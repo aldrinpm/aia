@@ -115,3 +115,26 @@ output string =
 ]
 
 For full specification of the API please download the attached yaml file
+
+To run it:
+
+cd /aia
+./mvnw spring-boot:run
+
+To stop that one: pkill -f spring-boot:run
+
+Call it
+
+POST /print, JSON body with letters and size:
+
+curl -X POST http://localhost:8080/print \
+  -H "Content-Type: application/json" \
+  -d '{"letters":"XYZ","size":5}'
+
+Other commands
+
+./mvnw test                                  # run the test suite
+./mvnw clean package                         # build target/demo-0.0.1-SNAPSHOT.jar
+java -jar target/demo-0.0.1-SNAPSHOT.jar     # run the built jar
+
+To use a different port: ./mvnw spring-boot:run -Dspring-boot.run.arguments=--server.port=9090.
